@@ -1,0 +1,15 @@
+projectName: "web-search"
+tavilyApiKey: "API KEY"
+https:
+  certificateArn: "Certificate ARN from ACM"
+  fullyQualifiedUrl: "Fully Qualified URL using which WebSearch Agent can be Accessed"
+qbusiness:
+  applicationId: "QBusiness application id under which the plugin will be created"
+plugin:
+  authorizationUrl: "https://login.microsoftonline.com/tenant-id/oauth2/v2.0/authorize"
+  tokenUrl: "https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token"
+  scopes: "api://sample-azure-app-id/scope-name"
+  secrets:
+    clientId: "azure-app-client-id"
+    clientSecret: "azure-app-client-secret"
+    redirectUri: "https://qbusiness-chat-url/oauth/callback"

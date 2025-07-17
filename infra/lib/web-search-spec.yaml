@@ -1,0 +1,97 @@
+---
+openapi: 3.0.1
+info:
+  title: Web Search Agent
+  description: Plugin to help search the web for general user queries
+  version: 1.0.0
+servers:
+- url: https://websearch.tools.qbusiness.aws.dev
+paths:
+  "/deep-search":
+    get:
+      operationId: simpleSearchPrompt
+      description: >- 
+        Use this operation to a complex deep research based on the prompt from the user. This operation searches the web for the user prompt, analyzes the results
+        aggregates the responses and returns a formatted response
+      x-amzn-operation-action-name: Search
+      parameters:
+        - name: prompt
+          in: query
+          description: The prompt that the user wishes to do a web search for
+          required: true
+          x-amzn-form-display-name: Prompt
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebSearchResponse"
+      security:
+        - oauth2:
+            - oauth2: ['default-m2m-resource-server-fb8hxg/read']
+  "/simple-search":
+    get:
+      operationId: simpleSearchPrompt
+      description: >- 
+        Use this operation to a simple web search based on the prompt from the user. Use this operation as the default for any query from that user that you are
+        not able to answer based on your configured data sources. This operation searches the web for the user prompt and returns the top 5
+        results. Each result is a web page. The web page contains the title, the url and the content.
+        Ensure you provide citations for all responses
+      x-amzn-operation-action-name: Search
+      parameters:
+        - name: prompt
+          in: query
+          description: The prompt that the user wishes to do a web search for
+          required: true
+          x-amzn-form-display-name: Prompt
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebSearchResponse"
+      security:
+        - oauth2:
+            - oauth2: ['default-m2m-resource-server-fb8hxg/read']
+components:
+  schemas:
+    WebSearchResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/WebSearchResponseItem"
+    WebSearchResponseItem:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the Web page
+        url:
+          type: string
+          description: The source Web Page of this content
+        conent:
+          type: string
+          description: Actual content of the URL
+      example:
+        title: "What Is Claude AI? - IBM"
+        url: "https://www.ibm.com/think/topics/claude-ai"
+        content: "Claude AI (Claude) is a generative [artificial intelligence (AI)"
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: Auth2 Authorization Code flow for authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: >-
+            https://us-east-1l6apis4rl.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: >-
+            https://us-east-1l6apis4rl.auth.us-east-1.amazoncognito.com/oauth2/token
+          refreshUrl: >-
+            https://us-east-1l6apis4rl.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            default-m2m-resource-server-fb8hxg/read: read

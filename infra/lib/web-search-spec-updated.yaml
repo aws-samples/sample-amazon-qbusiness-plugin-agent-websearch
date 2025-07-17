@@ -1,0 +1,98 @@
+openapi: 3.0.1
+info:
+  title: Web Search Agent
+  description: Plugin to help search the web for general user queries
+  version: 1.0.0
+servers:
+  - url: https://websearchagent.carthick.people.aws.dev
+    description: ALB for Web Search Agent
+paths:
+  /deep-search:
+    get:
+      operationId: simpleSearchPrompt
+      description: >-
+        Use this operation to a complex deep research based on the prompt from
+        the user. This operation searches the web for the user prompt, analyzes
+        the results aggregates the responses and returns a formatted response
+      x-amzn-operation-action-name: Search
+      parameters:
+        - name: prompt
+          in: query
+          description: The prompt that the user wishes to do a web search for
+          required: true
+          x-amzn-form-display-name: Prompt
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebSearchResponse'
+      security:
+        - oauth2:
+            - api://5b3262f1-f12d-40c6-8a45-9ea08bbcb92e/websearch
+  /simple-search:
+    get:
+      operationId: simpleSearchPrompt
+      description: >-
+        Use this operation to a simple web search based on the prompt from the
+        user. Use this operation as the default for any query from that user
+        that you are not able to answer based on your configured data sources.
+        This operation searches the web for the user prompt and returns the top
+        5 results. Each result is a web page. The web page contains the title,
+        the url and the content. Ensure you provide citations for all responses
+      x-amzn-operation-action-name: Search
+      parameters:
+        - name: prompt
+          in: query
+          description: The prompt that the user wishes to do a web search for
+          required: true
+          x-amzn-form-display-name: Prompt
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebSearchResponse'
+      security:
+        - oauth2:
+            - api://5b3262f1-f12d-40c6-8a45-9ea08bbcb92e/websearch
+components:
+  schemas:
+    WebSearchResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/WebSearchResponseItem'
+    WebSearchResponseItem:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the Web page
+        url:
+          type: string
+          description: The source Web Page of this content
+        conent:
+          type: string
+          description: Actual content of the URL
+      example:
+        title: What Is Claude AI? - IBM
+        url: https://www.ibm.com/think/topics/claude-ai
+        content: Claude AI (Claude) is a generative [artificial intelligence (AI)
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: Auth2 Authorization Code flow for authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: >-
+            https://login.microsoftonline.com/f2044692-dc09-426e-ae0d-4aed9c127806/oauth2/v2.0/authorize
+          tokenUrl: >-
+            https://login.microsoftonline.com/f2044692-dc09-426e-ae0d-4aed9c127806/oauth2/v2.0/token
+          scopes:
+            api://5b3262f1-f12d-40c6-8a45-9ea08bbcb92e/websearch: Access to web search functionality
